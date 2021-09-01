@@ -1,0 +1,186 @@
+<definitions xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+             xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy"
+             xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:cmn="http://services.ws.gpp.sinam.net/"
+             xmlns:tns="http://pac.portal.ws.gpp.sinam.net/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://pac.portal.ws.gpp.sinam.net/"
+             name="GPPWebPacWS">
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://services.ws.gpp.sinam.net/" schemaLocation="GPPCommonWSSchema.xsd"/>
+        </xsd:schema>
+        <xsd:schema>
+            <xsd:import namespace="http://pac.portal.ws.gpp.sinam.net/" schemaLocation="GPPWebPacWS.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="WSException">
+        <part name="fault" element="cmn:WSException"/>
+    </message>
+    <message name="MessageHeader">
+        <part name="messageHeader" element="cmn:messageHeader"/>
+    </message>
+    <message name="CompletePayment">
+        <part name="parameters" element="tns:CompletePayment"/>
+    </message>
+    <message name="CompletePaymentResponse">
+        <part name="result" element="tns:CompletePaymentResponse"/>
+    </message>
+    <message name="CompletePaymentWithError">
+        <part name="parameters" element="tns:CompletePaymentWithError"/>
+    </message>
+    <message name="CompletePaymentWithErrorResponse">
+        <part name="result" element="tns:CompletePaymentWithErrorResponse"/>
+    </message>
+    <!--
+        <message name="CompleteTokenRegistration">
+            <part name="parameters" element="tns:CompleteTokenRegistration" />
+        </message>
+
+        <message name="CompleteTokenRegistrationResponse">
+            <part name="result" element="tns:CompleteTokenRegistrationResponse" />
+        </message>
+
+        <message name="CompleteTokenRegistrationWithError">
+            <part name="parameters" element="tns:CompleteTokenRegistrationWithError" />
+        </message>
+
+        <message name="CompleteTokenRegistrationWithErrorResponse">
+            <part name="result" element="tns:CompleteTokenRegistrationWithErrorResponse" />
+        </message>
+
+      -->
+    <message name="GetPaymentData">
+        <part name="parameters" element="tns:GetPaymentData"/>
+    </message>
+    <message name="GetPaymentDataResponse">
+        <part name="result" element="tns:GetPaymentDataResponse"/>
+    </message>
+    <portType name="GPPWebPacWS">
+        <operation name="CompletePayment">
+            <input wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePayment"
+                   message="tns:CompletePayment"/>
+            <output wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePaymentResponse"
+                    message="tns:CompletePaymentResponse"/>
+            <fault message="tns:WSException" name="WSException"
+                   wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePayment/Fault/WSException"/>
+        </operation>
+        <operation name="CompletePaymentWithError">
+            <input wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePaymentWithError"
+                   message="tns:CompletePaymentWithError"/>
+            <output wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePaymentWithErrorResponse"
+                    message="tns:CompletePaymentWithErrorResponse"/>
+            <fault message="tns:WSException" name="WSException"
+                   wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePaymentWithError/Fault/WSException"/>
+        </operation>
+        <!--
+                <operation name="CompleteTokenRegistration" >
+                    <input
+                        wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistration"
+                        message="tns:CompleteTokenRegistration" />
+                    <output
+                        wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistrationResponse"
+                        message="tns:CompleteTokenRegistrationResponse" />
+                    <fault message="tns:WSException" name="WSException"
+                        wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistration/Fault/WSException" />
+                </operation>
+
+                <operation name="CompleteTokenRegistrationWithError" >
+                    <input wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistrationWithError"
+                        message="tns:CompleteTokenRegistrationWithError" />
+                    <output
+                        wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistrationWithErrorResponse"
+                        message="tns:CompleteTokenRegistrationWithErrorResponse" />
+                    <fault message="tns:WSException" name="WSException"
+                        wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistrationWithError/Fault/WSException" />
+                </operation>
+          -->
+        <operation name="GetPaymentData" parameterOrder="parameters">
+            <input wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/GetPaymentData"
+                   message="tns:GetPaymentData"/>
+            <output wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/GetPaymentDataResponse"
+                    message="tns:GetPaymentDataResponse"/>
+            <fault wsam:Action="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/GetPaymentData/Fault/WSException"
+                   message="tns:WSException" name="WSException"/>
+        </operation>
+    </portType>
+    <binding name="GPPWebPacWSPortBinding" type="tns:GPPWebPacWS">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="CompletePayment">
+            <soap:operation soapAction="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePayment"/>
+            <input>
+                <soap:header message="tns:MessageHeader" part="messageHeader" use="literal"/>
+                <soap:body use="literal" parts="parameters"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="WSException">
+                <soap:fault name="WSException" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CompletePaymentWithError">
+            <soap:operation soapAction="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompletePaymentWithError"/>
+            <input>
+                <soap:header message="tns:MessageHeader" part="messageHeader" use="literal"/>
+                <soap:body use="literal" parts="parameters"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="WSException">
+                <soap:fault name="WSException" use="literal"/>
+            </fault>
+        </operation>
+        <!--
+                <operation name="CompleteTokenRegistration">
+                    <soap:operation
+                        soapAction="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistration" />
+                    <input>
+                        <soap:header message="tns:MessageHeader" part="messageHeader"
+                            use="literal" />
+                        <soap:body use="literal" parts="parameters" />
+                    </input>
+                    <output>
+                        <soap:body use="literal" />
+                    </output>
+                    <fault name="WSException">
+                        <soap:fault name="WSException" use="literal" />
+                    </fault>
+                </operation>
+
+                <operation name="CompleteTokenRegistrationWithError">
+                    <soap:operation
+                        soapAction="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/CompleteTokenRegistrationWithError" />
+                    <input>
+                        <soap:header message="tns:MessageHeader" part="messageHeader"
+                            use="literal" />
+                        <soap:body use="literal" parts="parameters" />
+                    </input>
+                    <output>
+                        <soap:body use="literal" />
+                    </output>
+                    <fault name="WSException">
+                        <soap:fault name="WSException" use="literal" />
+                    </fault>
+                </operation>
+          -->
+        <operation name="GetPaymentData">
+            <soap:operation soapAction="http://pac.portal.ws.gpp.sinam.net/GPPWebPacWS/GetPaymentData"/>
+            <input>
+                <soap:header use="literal" part="messageHeader" message="tns:MessageHeader"/>
+                <soap:body use="literal" parts="parameters"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="WSException">
+                <soap:fault name="WSException" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="GPPWebPacWS">
+        <port name="GPPWebPacWSPort" binding="tns:GPPWebPacWSPortBinding">
+            <soap:address location="https://testservices.gpp.az/PacPmtProc/GPPWebPacWS"/>
+        </port>
+    </service>
+</definitions>

@@ -1,0 +1,116 @@
+<xs:schema xmlns:tns="http://pac.portal.ws.gpp.sinam.net/" xmlns:cmn="http://services.ws.gpp.sinam.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://pac.portal.ws.gpp.sinam.net/">
+    <xs:import namespace="http://services.ws.gpp.sinam.net/" schemaLocation="GPPCommonWSSchema.xsd"/>
+    <xs:element name="CompletePayment" type="tns:CompletePayment"/>
+    <xs:element name="CompletePaymentResponse" type="tns:CompletePaymentResponse"/>
+    <xs:element name="CompletePaymentWithError" type="tns:CompletePaymentWithError"/>
+    <xs:element name="CompletePaymentWithErrorResponse" type="cmn:emptyResponse"/>
+    <!--
+      <xs:element name="CompleteTokenRegistration" type="tns:CompleteTokenRegistration"/>
+      <xs:element name="CompleteTokenRegistrationResponse" type="cmn:emptyResponse"/>
+
+      <xs:element name="CompleteTokenRegistrationWithError" type="tns:CompleteTokenRegistrationWithError" />
+      <xs:element name="CompleteTokenRegistrationWithErrorResponse" type="cmn:emptyResponse" />
+      -->
+    <xs:element name="GetPaymentData" type="cmn:emptyRequest"/>
+    <xs:element name="GetPaymentDataResponse" type="tns:GetPaymentDataResponse"/>
+    <xs:complexType name="CompletePayment">
+        <xs:sequence>
+            <xs:element name="PaymentCompletionRequest" type="tns:paymentCompletionRequest"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="paymentCompletionRequest">
+        <xs:sequence>
+            <xs:element name="swiftBic" type="tns:swiftBic"/>
+            <xs:element name="retry" type="xs:boolean"/>
+            <xs:element name="terminalId" type="cmn:terminalId"/>
+            <xs:element name="paymentList" type="tns:pacPayment" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="pacPayment">
+        <xs:sequence>
+            <xs:element name="id" type="cmn:stringMax100"/>
+            <xs:element name="pacTransactionId" type="cmn:pacTransactionId"/>
+            <xs:element name="pacDateTime" type="xs:dateTime"/>
+            <xs:element name="paymentAmount" type="cmn:amount"/>
+            <xs:element name="feeCalculationMethod" type="cmn:feeCalculationMethod"/>
+            <xs:element name="feeAmount" type="cmn:amount"/>
+            <xs:element name="bankBranchCode" type="cmn:companyCode" minOccurs="0"/>
+            <xs:element name="bankAccountNumber" type="cmn:iban" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CompletePaymentResponse">
+        <xs:sequence>
+            <xs:element name="return" type="tns:paymentCompletionResponse"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="paymentCompletionResponse">
+        <xs:sequence>
+            <xs:element name="paymentResultList" type="tns:paymentResult" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="paymentResult">
+        <xs:sequence>
+            <xs:element name="id" type="cmn:stringMax100"/>
+            <xs:element name="serviceAccount" type="tns:serviceAccount"/>
+            <xs:element name="invoice" type="tns:invoice"/>
+            <xs:element name="receiptNumber" type="cmn:receiptNumber"/>
+            <xs:element name="paymentDateTime" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="serviceAccount">
+        <xs:sequence>
+            <xs:element name="scCode" type="cmn:companyCode"/>
+            <xs:element name="identificationSubtype" type="cmn:identificationSubtype"/>
+            <xs:element name="abonCode" type="cmn:abonCode"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="invoice">
+        <xs:sequence>
+            <xs:element name="parentInvoiceCode" type="cmn:invoiceCode" minOccurs="0"/>
+            <xs:element name="identificationSubtype" type="cmn:identificationSubtype" minOccurs="0"/>
+            <xs:element name="invoiceCode" type="cmn:invoiceCode" minOccurs="0"/>
+            <xs:element name="serviceCode" type="cmn:serviceCode"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CompletePaymentWithError">
+        <xs:sequence>
+            <xs:element name="Reason" type="cmn:errorType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CompleteTokenRegistration">
+        <xs:sequence>
+            <xs:element name="TokenRegistrationCompletionRequest" type="tns:tokenRegistrationCompletionRequest"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="tokenRegistrationCompletionRequest">
+        <xs:sequence>
+            <xs:element name="swiftBic" type="tns:swiftBic"/>
+            <xs:element name="tokenId" type="cmn:cardDataTokenIdType"/>
+            <xs:element name="token" type="cmn:cardDataTokenType"/>
+            <xs:element name="alias" type="tns:cardDataAliasType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CompleteTokenRegistrationWithError">
+        <xs:sequence>
+            <xs:element name="Reason" type="cmn:errorType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="GetPaymentDataResponse">
+        <xs:sequence>
+            <xs:element name="return" type="tns:paymentResult" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="cardDataAliasType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{1,4}"/>
+            <xs:minLength value="4"/>
+            <xs:maxLength value="4"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="swiftBic">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="8"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

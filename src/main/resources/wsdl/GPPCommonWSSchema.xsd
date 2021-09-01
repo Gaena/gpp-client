@@ -1,0 +1,175 @@
+<xs:schema xmlns:tns="http://services.ws.gpp.sinam.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://services.ws.gpp.sinam.net/">
+    <xs:element name="WSException" nillable="true" type="tns:errorType"/>
+    <xs:element name="messageHeader" type="tns:messageHeader"/>
+    <xs:complexType name="emptyRequest">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:complexType name="emptyResponse">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:complexType name="errorType">
+        <xs:sequence>
+            <xs:element name="errorObjectType" type="tns:objectType"/>
+            <xs:element name="errorCode" type="tns:errorCode"/>
+            <xs:element name="errorData" type="xs:anyType" nillable="true" maxOccurs="unbounded"/>
+            <xs:element name="errorDateTime" type="xs:dateTime"/>
+            <xs:element name="errorDetailList" type="tns:errorDetail" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="errorDetail">
+        <xs:sequence>
+            <xs:element name="fieldName" type="xs:string"/>
+            <xs:element name="invalidFieldValue" type="tns:stringMax256"/>
+            <xs:element name="subErrorCode" type="tns:subErrorCode"/>
+            <xs:element name="referenceData" type="xs:anyType" nillable="true" maxOccurs="unbounded"/>
+            <xs:element name="fieldErrorDetailList" type="tns:errorDetail" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="messageHeader">
+        <xs:sequence>
+            <xs:element name="userID" type="tns:companyCode"/>
+            <xs:element name="receiverID" type="tns:companyCode"/>
+            <xs:element name="transactionID" type="tns:transactionId"/>
+            <xs:element name="messageDateTime" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="messageTimestamp" type="xs:long" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="objectType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="INPUT"/>
+            <xs:enumeration value="INVOICE"/>
+            <xs:enumeration value="PAYMENT"/>
+            <xs:enumeration value="TRANSACTION"/>
+            <xs:enumeration value="METHOD"/>
+            <xs:enumeration value="SYSTEM"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="errorCode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NOT_FOUND"/>
+            <xs:enumeration value="NOT_IMPLEMENTED"/>
+            <xs:enumeration value="NOT_COMPLETED"/>
+            <xs:enumeration value="PAID_ALREADY"/>
+            <xs:enumeration value="USED_ALREADY"/>
+            <xs:enumeration value="DATA_MISMATCH"/>
+            <xs:enumeration value="VALIDATION_ERROR"/>
+            <xs:enumeration value="SYSTEM_ERROR"/>
+            <xs:enumeration value="FAILURE"/>
+            <xs:enumeration value="TIMEOUT"/>
+            <xs:enumeration value="IS_EXPIRED"/>
+            <xs:enumeration value="IS_INPROGRESS"/>
+            <xs:enumeration value="IS_CANCELED"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="subErrorCode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IS_NULL"/>
+            <xs:enumeration value="IS_NOT_EQUAL"/>
+            <xs:enumeration value="IS_NOT_IN_SIZE_RANGE"/>
+            <xs:enumeration value="IS_NOT_IN_VALUE_RANGE"/>
+            <xs:enumeration value="PATTERN_MISMATCH"/>
+            <xs:enumeration value="INVALID_AMOUNT"/>
+            <xs:enumeration value="NEGATIVE_AMOUNT"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="companyCode">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="100000"/>
+            <xs:maxInclusive value="999999"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="transactionId">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{1,32}"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="iban">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="28"/>
+            <xs:maxLength value="28"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="serviceCode">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="100000"/>
+            <xs:maxInclusive value="99999999"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="amount">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.00"/>
+            <xs:maxInclusive value="9999999999.99"/>
+            <xs:totalDigits value="12"/>
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="invoiceCode">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="receiptNumber">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{1,16}"/>
+            <xs:maxLength value="16"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="feeCalculationMethod">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="WITHOUT_FEE"/>
+            <xs:enumeration value="GPP_FEE"/>
+            <xs:enumeration value="SP_FIXED_FEE"/>
+            <xs:enumeration value="NON_RESIDENT_FEE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="identificationSubtype">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="4"/>
+            <xs:maxLength value="8"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="abonCode">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="16"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="terminalId">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{1,10}"/>
+            <xs:maxLength value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="pacTransactionId">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="stringMax100">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="stringMax256">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="256"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="cardDataTokenIdType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="cardDataTokenType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="128"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
