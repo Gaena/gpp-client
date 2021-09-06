@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -24,15 +25,19 @@ public class GppClient extends WebServiceGatewaySupport {
 
     private final String wsdlUrl;
     private final String wsdlPublicUrl;
+    private final HttpsUrlConnectionMessageSender messageSender;
 
     public GppClient(@Value("${wsdl.url}") String wsdlUrl,
                      @Qualifier("marshaller") Jaxb2Marshaller marshaller,
-                     @Value("${wsdl.public_url}") String wsdlPublicUrl) {
+                     @Value("${wsdl.public_url}") String wsdlPublicUrl,
+                     @Qualifier("messageSender") HttpsUrlConnectionMessageSender messageSender) {
         this.wsdlUrl = wsdlUrl;
         this.wsdlPublicUrl = wsdlPublicUrl;
+        this.messageSender = messageSender;
         super.setMarshaller(marshaller);
         super.setUnmarshaller(marshaller);
         super.setDefaultUri(wsdlPublicUrl);
+        super.setMessageSender(messageSender);
     }
 
     public GetPaymentDataResponse getResponse() {

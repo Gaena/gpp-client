@@ -18,11 +18,8 @@ public class GppRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(Arrays.toString(args));
 
         GetPaymentDataResponse response = client.getResponse();
-/*
-        System.out.println(response.getReturn());*/
 
     }
 }
