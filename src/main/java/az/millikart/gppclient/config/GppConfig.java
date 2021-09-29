@@ -1,7 +1,6 @@
 package az.millikart.gppclient.config;
 
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,12 +8,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.soap.security.support.TrustManagersFactoryBean;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
-import sun.net.www.http.HttpClient;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -50,12 +46,7 @@ public class GppConfig {
         httpsUrlConnectionMessageSender.setTrustManagers(trustManagersFactoryBean().getObject());
         // allows the client to skip host name verification as otherwise following error is thrown:
         // java.security.cert.CertificateException: No name matching localhost found
-        httpsUrlConnectionMessageSender.setHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
-                return "localhost".equals(hostname);
-            }
-        });
+        httpsUrlConnectionMessageSender.setHostnameVerifier((hostname, sslSession) -> true);
 
         return httpsUrlConnectionMessageSender;
     }
@@ -66,7 +57,6 @@ public class GppConfig {
 
         keyStoreFactoryBean.setLocation(trustStore);
         keyStoreFactoryBean.setPassword(trustStorePassword);
-
         return keyStoreFactoryBean;
     }
 

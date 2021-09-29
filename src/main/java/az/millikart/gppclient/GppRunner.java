@@ -5,8 +5,6 @@ import az.millikart.wsdl.GetPaymentDataResponse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
 public class GppRunner implements CommandLineRunner {
 

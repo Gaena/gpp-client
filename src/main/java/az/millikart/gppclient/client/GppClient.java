@@ -36,7 +36,7 @@ public class GppClient extends WebServiceGatewaySupport {
         this.messageSender = messageSender;
         super.setMarshaller(marshaller);
         super.setUnmarshaller(marshaller);
-        super.setDefaultUri(wsdlPublicUrl);
+        super.setDefaultUri("wsdlPublicUrl");
         super.setMessageSender(messageSender);
     }
 
@@ -47,7 +47,6 @@ public class GppClient extends WebServiceGatewaySupport {
         EmptyRequest emptyRequest = factory.createEmptyRequest();
         JAXBElement<EmptyRequest> request = factory.createGetPaymentData(emptyRequest);
 
-        System.out.println(wsdlUrl);
         GetPaymentDataResponse getPaymentDataResponse = (GetPaymentDataResponse) getWebServiceTemplate()
                 .marshalSendAndReceive(
                         request,
