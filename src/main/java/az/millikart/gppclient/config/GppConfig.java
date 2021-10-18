@@ -1,6 +1,7 @@
 package az.millikart.gppclient.config;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,26 +11,37 @@ import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.soap.security.support.TrustManagersFactoryBean;
 import org.springframework.ws.transport.http.HttpsUrlConnectionMessageSender;
 
-import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 @Configuration
+@Slf4j
 public class GppConfig {
 
     private final String wsdlPackage;
 
     private final Resource trustStore;
-
     private final String trustStorePassword;
+
+    private Resource keyStore;
+    private String keyStorePassword;
 
     public GppConfig(@Value("${wsdl.package}") String wsdlPackage,
                      @Value("${ssl.trust-store}") Resource trustStore,
-                     @Value("${ssl.trust-store-password}") String trustStorePassword) {
+                     @Value("${ssl.trust-store-password}") String trustStorePassword,
+                     @Value("${ssl.key-store}") Resource keyStore,
+                     @Value("${ssl.key-store-password}") String keyStorePassword) {
         this.wsdlPackage = wsdlPackage;
         this.trustStore = trustStore;
         this.trustStorePassword = trustStorePassword;
+        this.keyStore = keyStore;
+        this.keyStorePassword = keyStorePassword;
     }
 
     @Bean(name = "marshaller")
@@ -39,32 +51,53 @@ public class GppConfig {
         return marshaller;
     }
 
-    @Bean(name = "messageSender")
-    public HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender() throws Exception {
-        HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender =
-                new HttpsUrlConnectionMessageSender();
-        httpsUrlConnectionMessageSender.setTrustManagers(trustManagersFactoryBean().getObject());
-        // allows the client to skip host name verification as otherwise following error is thrown:
-        // java.security.cert.CertificateException: No name matching localhost found
-        httpsUrlConnectionMessageSender.setHostnameVerifier((hostname, sslSession) -> true);
+    @Bean
+    KeyManagerFactory keyManagerFactory() throws NoSuchAlgorithmException, CertificateException,
+            KeyStoreException, IOException, UnrecoverableKeyException {
 
-        return httpsUrlConnectionMessageSender;
+        KeyStore ks = KeyStore.getInstance("JKS");
+        ks.load(keyStore.getInputStream(), keyStorePassword.toCharArray());
+        log.info("Loaded keystore: " + keyStore.getURI());
+        try {
+            keyStore.getInputStream().close();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        keyManagerFactory.init(ks, keyStorePassword.toCharArray());
+
+        return keyManagerFactory;
     }
 
     @Bean
-    public KeyStoreFactoryBean trustStore() {
-        KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
+    TrustManagerFactory trustManagerFactory() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+        KeyStore ts = KeyStore.getInstance("JKS");
+        ts.load(trustStore.getInputStream(), trustStorePassword.toCharArray());
+        log.info("Loaded trustStore: " + trustStore.getURI());
+        try {
+            trustStore.getInputStream().close();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(ts);
 
-        keyStoreFactoryBean.setLocation(trustStore);
-        keyStoreFactoryBean.setPassword(trustStorePassword);
-        return keyStoreFactoryBean;
+        return trustManagerFactory;
     }
 
     @Bean
-    public TrustManagersFactoryBean trustManagersFactoryBean() throws NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException {
-        TrustManagersFactoryBean trustManagersFactoryBean = new TrustManagersFactoryBean();
-        trustManagersFactoryBean.setKeyStore(trustStore().getObject());
+    HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender() throws UnrecoverableKeyException,
+            CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        HttpsUrlConnectionMessageSender messageSender = new HttpsUrlConnectionMessageSender();
+        messageSender.setKeyManagers(keyManagerFactory().getKeyManagers());
+        messageSender.setTrustManagers(trustManagerFactory().getTrustManagers());
 
-        return trustManagersFactoryBean;
+        // otherwise: java.security.cert.CertificateException: No name matching localhost found
+        messageSender.setHostnameVerifier((hostname, sslSession) -> true);
+
+        return messageSender;
     }
+
+
 }
